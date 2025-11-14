@@ -1,7 +1,8 @@
 let config = {      // screen size & add physics & scenes
     type: Phaser.AUTO,
-    width: 1200,
+    width: 1500,
     height: 800,
+    parent: 'phaser-game',
     autoCenter: true,
     render: {
         pixelArt: true,
@@ -12,10 +13,10 @@ let config = {      // screen size & add physics & scenes
             debug: false
         }
     },
-    scene: [ Home ]
+    scene: [ Home, Load, Settings ]
 }
 
 let game = new Phaser.Game(config)  // make the game!
 
 // set key bindings
-let Pointer
+let Pointer, keyS
