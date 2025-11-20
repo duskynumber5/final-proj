@@ -1,6 +1,6 @@
-class Lantern extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, texture = 'lantern', frame) {
-        super(scene, x, y, texture, frame)
+class Lantern extends Phaser.GameObjects.Rectangle {
+    constructor(scene, x, y) {
+        super(scene, x, y, 32, 42, Phaser.Display.Color.GetColor(246, Phaser.Math.Between(200, 225), Phaser.Math.Between(100, 160)))
 
         scene.add.existing(this)    // add object to scene
         scene.physics.add.existing(this)    // enable object physics
@@ -11,17 +11,14 @@ class Lantern extends Phaser.GameObjects.Sprite {
         this.body.setVelocity(10 * this.randomX, 10 * this.randomY)  
 
         // gravity
-
         this.body.setDrag(200, 200)
         this.body.setDamping(true)
         this.body.setCollideWorldBounds(true)
         this.body.setBounce(0.5)
         this.body.setMaxVelocity(16, 16)
 
-        // create graphic
-        this.body.setSize(32, 32)
+        // random pattern
 
-        // random pattern/color
     }
 
     update(pointer) {
