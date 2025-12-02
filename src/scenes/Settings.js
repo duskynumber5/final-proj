@@ -62,6 +62,49 @@ class Settings extends Phaser.Scene {
             this.B1.fillColor = overlayColor
             game.landscapeUpdate = true
         })
+
+        this.add.text(500, 380, `Scene Mood:`, {
+            fontSize: '18px',
+            color: '#ffffff'
+        })
+
+        this.stateLabel = this.add.text(500, 405, `Current: ${game.sceneState}`, {
+            fontSize: '16px',
+            color: '#ffffff'
+        })
+
+        this.createSceneButton(600, 450, 'Calm', 'calm')
+        this.createSceneButton(750, 450, 'Festival', 'festival')
+        this.createSceneButton(900, 450, 'Sparse', 'sparse')
+    }
+
+    createSceneButton(x, y, text, stateValue) {
+        const rectColor = Phaser.Display.Color.GetColor(250, 250, 250)
+        const rect = this.add.rectangle(x, y, 120, 40, rectColor).setOrigin(0.5).setInteractive()
+
+        const label = this.add.text(x, y, text, {
+            fontSize: '16px',
+            color: '#000000'
+        }).setOrigin(0.5)
+
+        rect.on('pointerdown', () => {
+            // set global scene state
+            game.sceneState = stateValue
+
+            // tell Home scene to regenerate lanterns with new grammar
+            game.lanternUpdate = true
+
+            // update label text so player sees current mode
+            this.stateLabel.setText(`Current: ${game.sceneState}`)
+        })
+
+        // Optional: simple hover effect
+        rect.on('pointerover', () => {
+            rect.setFillStyle(Phaser.Display.Color.GetColor(220, 220, 220))
+        })
+        rect.on('pointerout', () => {
+            rect.setFillStyle(rectColor)
+        })
     }
 
     update() {
