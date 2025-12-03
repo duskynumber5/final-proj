@@ -32,7 +32,8 @@ class Home extends Phaser.Scene {
         this.label = this.add.text(0, 0, '(x, y)')
 
         this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
-        document.getElementById('info').innerHTML = 'S: Settings Menu'
+        this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)
+        document.getElementById('info').innerHTML = 'S: Settings Menu -------- D: Drawing Menu'
     }
 
     update() {
@@ -48,6 +49,10 @@ class Home extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown(this.keyS)) {
             this.scene.pause('homeScene')
             this.scene.launch('settingsScene')
+        }
+        if (Phaser.Input.Keyboard.JustDown(this.keyD)) {
+            this.scene.pause('homeScene')
+            this.scene.launch('drawScene')
         }
 
         if (game.landscapeUpdate == true) {

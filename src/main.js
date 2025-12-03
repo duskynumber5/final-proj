@@ -13,7 +13,7 @@ let config = {      // screen size & add physics & scenes
             debug: false
         }
     },
-    scene: [ Home, Load, Settings ]
+    scene: [ Home, Load, Settings, Drawing ]
 }
 
 let game = new Phaser.Game(config)  // make the game!
