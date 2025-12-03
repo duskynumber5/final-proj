@@ -1,9 +1,27 @@
-class Lantern extends Phaser.GameObjects.Rectangle {
+class Lantern extends Phaser.GameObjects.Container {
     constructor(scene, x, y) {
-        super(scene, x, y, 32, 42, Phaser.Display.Color.GetColor(246, Phaser.Math.Between(200, 225), Phaser.Math.Between(100, 160)))
+        super(scene, x, y)
 
         scene.add.existing(this)    // add object to scene
         scene.physics.add.existing(this)    // enable object physics
+
+        const baseColor = Phaser.Display.Color.GetColor(
+            246,
+            Phaser.Math.Between(200, 225),
+            Phaser.Math.Between(100, 160)
+        )
+
+        const glowColor = Phaser.Display.Color.GetColor(255, 215, 0)
+        this.glowRect = scene.add.rectangle(0, 0, 32, 42, glowColor).setAlpha(0.4)
+        this.glowRect.setOrigin(0.5)
+        this.add(this.glowRect)
+
+        this.bodyRect = scene.add.rectangle(0, 0, 32, 42, baseColor)
+        this.bodyRect.setOrigin(0.5)
+        this.add(this.bodyRect)
+
+        this.body.setSize(32, 42)
+        this.body.setOffset(-16, -21)
 
         // random movement
         this.randomX = Phaser.Math.Between(-1, 1)
@@ -17,8 +35,7 @@ class Lantern extends Phaser.GameObjects.Rectangle {
         this.body.setBounce(0.5)
         this.body.setMaxVelocity(16, 16)
 
-        // random pattern
-
+        // pattern
     }
 
     applySizeType(type) {
@@ -35,7 +52,8 @@ class Lantern extends Phaser.GameObjects.Rectangle {
 
         // update physics body to match new rect size
         if (this.body) {
-            this.body.setSize(this.width, this.height)
+            this.bodyRect.setSize(this.width, this.height)
+            this.glowRect.setSize(this.width + 10, this.height + 10)
         }
     }
 
@@ -60,7 +78,7 @@ class Lantern extends Phaser.GameObjects.Rectangle {
         }
 
         const color = Phaser.Display.Color.GetColor(r, g, b)
-        this.setFillStyle(color, 1)   // change rect color
+        this.bodyRect.setFillStyle(color, 1)   // change rect color
     }
 
     update(pointer) {

@@ -3,10 +3,6 @@ class Load extends Phaser.Scene {
         super("loadScene")
     }
 
-    preload() {
-
-    }
-
     update() {
         this.scene.start('homeScene')
     }

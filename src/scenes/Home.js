@@ -3,13 +3,21 @@ class Home extends Phaser.Scene {
         super("homeScene")
     }
 
+    preload() {
+        this.load.scenePlugin({
+            key: 'rexuiplugin',
+            url: 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js',
+            sceneKey: 'rexUI'
+        })
+    }
+    
     create() {
         this.physics.world.setBounds(-25, -25, 1525, 825)
 
         if (!game.sceneState) {
             game.sceneState = 'calm'
         }
-        this.initLanternGrammar()
+        this.scenes()
 
         this.drawLandscape1()
         this.drawLandscape2()
@@ -47,6 +55,7 @@ class Home extends Phaser.Scene {
             this.landscapeGraphics2.destroy()
             this.drawLandscape1()
             this.drawLandscape2()
+            this.regenWater()
             this.genLanterns()
         }
 
@@ -69,23 +78,19 @@ class Home extends Phaser.Scene {
                 let r, g, b
 
                 if (game.sceneState === 'calm') {
-                    // calm: bluish/purple, soft variation
                     r = 40 + 40 * v
                     g = 90 + 80 * v
                     b = 160 + 80 * v
                 } else if (game.sceneState === 'festival') {
-                    // festival: warmer, more saturated
                     r = 180 + 70 * v
                     g = 100 + 60 * v
                     b = 80 + 40 * v
                 } else {
-                    // sparse/mixed: somewhere between
                     r = 80 + 80 * v
                     g = 110 + 80 * v
                     b = 150 + 80 * v
                 }
 
-                // make sure we stay in [0,255]
                 r = Phaser.Math.Clamp(r, 0, 255)
                 g = Phaser.Math.Clamp(g, 0, 255)
                 b = Phaser.Math.Clamp(b, 0, 255)
@@ -96,6 +101,8 @@ class Home extends Phaser.Scene {
                 tiles.push(sq)
             }
         }
+        const blue = Phaser.Display.Color.GetColor(51, 153, 255)
+        this.add.rectangle(-25, 650, 1525, 170, blue).setAlpha(0.2).setOrigin(0,0)
     }
 
     regenWater() {
@@ -139,8 +146,8 @@ class Home extends Phaser.Scene {
     drawLandscape1() {
         game.landscapeUpdate = false
 
+        var color = Phaser.Display.Color.GetColor(34, 100, 34)
         this.landscapeGraphics1 = this.add.graphics()
-        var color = Phaser.Display.Color.GetColor(100, 100, 100)
         this.landscapeGraphics1.lineStyle(1, color, 1)
         
         // parameters
@@ -150,7 +157,7 @@ class Home extends Phaser.Scene {
 
         // starting conditions
         var height = Phaser.Math.Between(0, HEIGHT_MAX)
-        var slope = Phaser.Math.Between(0, HEIGHT_MAX)
+        var slope = Phaser.Math.Between(-STEP_MAX, STEP_MAX)
 
         // creating the landscape
         for (var x = 0; x < config.width; x++) {
@@ -159,15 +166,10 @@ class Home extends Phaser.Scene {
             slope += (Math.random() * STEP_CHANGE) * 2 - STEP_CHANGE
 
             // clip height and slope to maximum
-            if (slope > STEP_MAX) { slope = STEP_MAX }
-            if (slope < -STEP_MAX) { slope = -STEP_MAX }
+            slope = Phaser.Math.Clamp(slope, -STEP_MAX, STEP_MAX)
         
-            if (height > HEIGHT_MAX) { 
-                height = HEIGHT_MAX
-                slope *= -1
-            }
-            if (height < 0) { 
-                height = 0
+            if (height > HEIGHT_MAX || height < 0) {
+                height = Phaser.Math.Clamp(height, 0, HEIGHT_MAX)
                 slope *= -1
             }
             
@@ -182,13 +184,13 @@ class Home extends Phaser.Scene {
     drawLandscape2() {
         game.landscapeUpdate = false
 
+        var color = Phaser.Display.Color.GetColor(107, 142, 35)
         this.landscapeGraphics2 = this.add.graphics()
-        var color = Phaser.Display.Color.GetColor(200, 200, 200)
         this.landscapeGraphics2.lineStyle(1, color, 1)
         
         // parameters
-        var STEP_MAX = 4
-        var STEP_CHANGE = 5
+        var STEP_MAX = 2
+        var STEP_CHANGE = 0.5
         var HEIGHT_MAX = 650
 
         // starting conditions
@@ -202,15 +204,10 @@ class Home extends Phaser.Scene {
             slope += (Math.random() * STEP_CHANGE) * 2 - STEP_CHANGE
 
             // clip height and slope to maximum
-            if (slope > STEP_MAX) { slope = STEP_MAX }
-            if (slope < -STEP_MAX) { slope = -STEP_MAX }
+            slope = Phaser.Math.Clamp(slope, -STEP_MAX, STEP_MAX)
         
-            if (height > HEIGHT_MAX) { 
-                height = HEIGHT_MAX
-                slope *= -1
-            }
-            if (height < 0) { 
-                height = 0
+            if (height > HEIGHT_MAX || height < 0) {
+                height = Phaser.Math.Clamp(height, 0, HEIGHT_MAX)
                 slope *= -1
             }
             
@@ -222,7 +219,7 @@ class Home extends Phaser.Scene {
         }
     }
 
-    initLanternGrammar() {
+    scenes() {
         this.lanternGrammar = {
             calm: {
                 typeWeights: {
@@ -251,23 +248,23 @@ class Home extends Phaser.Scene {
         }
     }
 
-    chooseWeightedKey(weightMap) {
+    chooseWeightedKey(weights) {
         let total = 0
-        for (let key in weightMap) {
-            total += weightMap[key]
+        for (let key in weights) {
+            total += weights[key]
         }
 
         let r = Math.random() * total
-        let running = 0
+        let parse = 0
 
-        for (let key in weightMap) {
-            running += weightMap[key]
-            if (r <= running) {
+        for (let key in weights) {
+            parse += weights[key]
+            if (r <= parse) {
                 return key
             }
         }
 
-        const keys = Object.keys(weightMap)
+        const keys = Object.keys(weights)
         return keys[keys.length - 1]
     }
 }

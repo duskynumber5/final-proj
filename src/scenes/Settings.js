@@ -12,20 +12,23 @@ class Settings extends Phaser.Scene {
     }
 
     create() {
-        this.pointer = this.input.activePointer
-
-        var BGcolor = Phaser.Display.Color.GetColor(255, 56, 190)
+        var BGcolor = Phaser.Display.Color.GetColor(128, 128, 128)
         this.add.rectangle(config.width / 2, config.height / 2, 600, 600, BGcolor)
 
         this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
 
-        const COLOR_PRIMARY = 0x4e342e
-        const COLOR_DARK    = 0x260e04
+        const COLOR_PRIMARY = 0xB8860B
+        const COLOR_DARK    = 0xFFD700
 
         this.label = this.add.text(500, 150, `Lanterns: ${game.currentLanterns}`, {
             fontSize: '18px',
             color: '#ffffff'
         })
+
+        const rexUI = this.rexUI
+        
+        const track = rexUI.add.roundRectangle(0, 0, 0, 0, 10, COLOR_DARK)
+        const thumb = rexUI.add.roundRectangle(0, 0, 0, 0, 12, COLOR_PRIMARY)
 
         this.slider = this.rexUI.add.slider({
             x: 700,
@@ -33,16 +36,15 @@ class Settings extends Phaser.Scene {
             width: 400,
             height: 20,
             orientation: 'x',
-
-            track: this.rexUI.add.roundRectangle(0, 0, 0, 0, 10, COLOR_DARK),
-            thumb: this.rexUI.add.roundRectangle(0, 0, 0, 0, 12, COLOR_PRIMARY),
-
+            track,
+            thumb,
             input: 'drag',
             value: game.currentLanterns / game.maxLanterns,
 
             valuechangeCallback: (value) => {
                 const newCount = Math.round(value * game.maxLanterns)
                 this.label.setText(`Lanterns: ${newCount}`)
+
                 if (game.currentLanterns != newCount) {
                     game.currentLanterns = newCount
                     game.lanternUpdate = true
@@ -58,9 +60,15 @@ class Settings extends Phaser.Scene {
         this.B1 = this.add.rectangle(750, 290, 40, 40, B1color).setOrigin(0).setInteractive()
 
         this.B1.on('pointerdown', () => {
-            var overlayColor = Phaser.Display.Color.GetColor(160, 0, 30)
-            this.B1.fillColor = overlayColor
-            game.landscapeUpdate = true
+            if (game.landscapeUpdate == false) {
+                var overlayColor = Phaser.Display.Color.GetColor(160, 0, 30)
+                this.B1.fillColor = overlayColor
+                game.landscapeUpdate = true
+            } else {
+                var overlayColor = Phaser.Display.Color.GetColor(250, 250, 250)
+                this.B1.fillColor = overlayColor
+                game.landscapeUpdate = false
+            }
         })
 
         this.add.text(500, 380, `Scene Mood:`, {
@@ -88,22 +96,10 @@ class Settings extends Phaser.Scene {
         }).setOrigin(0.5)
 
         rect.on('pointerdown', () => {
-            // set global scene state
             game.sceneState = stateValue
-
-            // tell Home scene to regenerate lanterns with new grammar
             game.lanternUpdate = true
 
-            // update label text so player sees current mode
             this.stateLabel.setText(`Current: ${game.sceneState}`)
-        })
-
-        // Optional: simple hover effect
-        rect.on('pointerover', () => {
-            rect.setFillStyle(Phaser.Display.Color.GetColor(220, 220, 220))
-        })
-        rect.on('pointerout', () => {
-            rect.setFillStyle(rectColor)
         })
     }
 
