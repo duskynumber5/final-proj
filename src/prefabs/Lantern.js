@@ -36,6 +36,7 @@ class Lantern extends Phaser.GameObjects.Container {
         this.body.setMaxVelocity(16, 16)
 
         // pattern
+        
     }
 
     applySizeType(type) {
@@ -50,7 +51,6 @@ class Lantern extends Phaser.GameObjects.Container {
             this.height = 60
         }
 
-        // update physics body to match new rect size
         if (this.body) {
             this.bodyRect.setSize(this.width, this.height)
             this.glowRect.setSize(this.width + 10, this.height + 10)
@@ -79,6 +79,28 @@ class Lantern extends Phaser.GameObjects.Container {
 
         const color = Phaser.Display.Color.GetColor(r, g, b)
         this.bodyRect.setFillStyle(color, 1)   // change rect color
+    }
+
+    addDrawing(drawing) {
+        if (this.drawingSprite) {
+            this.drawingSprite.destroy()
+            this.drawingSprite = null
+        }
+
+        if (!this.scene.textures.exists(drawing)) return
+
+        const img = this.scene.add.image(0, 0, drawing)
+        img.setOrigin(0.5)
+
+        const source = img.texture.getSourceImage()
+        const bodyW = this.bodyRect.width
+        const bodyH = this.bodyRect.height
+        const sx = bodyW / source.width
+        const sy = bodyH / source.height
+        img.setScale(Math.min(sx, sy))
+
+        this.add(img)
+        this.drawingSprite = img
     }
 
     update(pointer) {

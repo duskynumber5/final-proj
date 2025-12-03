@@ -6,28 +6,30 @@ class Drawing extends Phaser.Scene {
     create() {
         this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)
 
-        const canvasW = 600
-        const canvasH = 600
+        const canvasW = 32 * 12.5
+        const canvasH = 42 * 12.5
         const canvasX = config.width / 2 - canvasW / 2
         const canvasY = config.height / 2 - canvasH / 2
 
-        this.add.rectangle(canvasX, canvasY, canvasW, canvasH, 0xFFFFFF).setOrigin(0)
+        this.add.rectangle(canvasX, canvasY, canvasW, canvasH, 0xBDB76B).setOrigin(0)
 
         this.rt = this.add.renderTexture(canvasX, canvasY, canvasW, canvasH).setOrigin(0)
         this.rt.clear()
 
         const g = this.add.graphics()
-        g.fillStyle(0x000000, 1)
+        g.fillStyle(0xffffff, 1)
         g.fillCircle(4, 4, 4)
         g.generateTexture('brush', 8, 8)
         g.destroy()
 
         this.isDrawing = false
+        this.drawingPresent = false
 
         this.input.on('pointerdown', (pointer) => {
             if (pointer.leftButtonDown()) {
                 this.isDrawing = true
                 this.drawAt(pointer.x, pointer.y)
+                this.drawingPresent = true
             }
         })
 
@@ -54,7 +56,25 @@ class Drawing extends Phaser.Scene {
 
     update() {
         if (Phaser.Input.Keyboard.JustDown(this.keyD)) {
-            this.rt.saveTexture('playerLanternArt')
+            
+            if (this.drawingPresent) {
+                let i = 0
+                let key = ''
+
+                do {
+                    key = `playerLanternArt_${i}`
+                    i++
+                } while (this.textures.exists(key))
+
+                this.rt.saveTexture(key)
+
+                game.playerDrawingReady = true
+                game.lastDrawingKey = key
+            } else {
+                game.playerDrawingReady = false
+            }
+
+            this.drawingPresent = false
 
             this.scene.stop('drawScene')
             this.scene.resume('homeScene')

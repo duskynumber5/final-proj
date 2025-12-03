@@ -68,6 +68,25 @@ class Home extends Phaser.Scene {
             this.regenWater()
             this.genLanterns()
         }
+
+        if (game.playerDrawingReady && this.textures.exists(game.lastDrawingKey)) {
+            const rules = this.lanternGrammar[game.sceneState] || this.lanternGrammar.calm
+            const x = Phaser.Math.Between(0, 1500)
+            const y = Phaser.Math.Between(0, 800)
+            
+            const lantern = new Lantern(this, x, y)
+
+            const type = this.chooseWeightedKey(rules.typeWeights)
+            lantern.applySizeType(type)
+            lantern.applyPalette(rules.palette)
+            
+            lantern.addDrawing(game.lastDrawingKey)
+            
+            this.lanterns.push(lantern)
+            game.currentLanterns += 1
+
+            game.playerDrawingReady = false
+        }
     }
 
     genWater() {
