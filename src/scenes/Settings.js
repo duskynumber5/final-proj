@@ -14,6 +14,8 @@ class Settings extends Phaser.Scene {
     create() {
         var BGcolor = Phaser.Display.Color.GetColor(128, 128, 128)
         this.add.rectangle(config.width / 2, config.height / 2, 600, 600, BGcolor)
+        var ACcolor = Phaser.Display.Color.GetColor(100, 100, 100)
+        this.add.rectangle(config.width / 2, config.height / 2, 550, 550, ACcolor)
 
         this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
 
@@ -61,7 +63,7 @@ class Settings extends Phaser.Scene {
 
         this.B1.on('pointerdown', () => {
             if (game.landscapeUpdate == false) {
-                var overlayColor = Phaser.Display.Color.GetColor(160, 0, 30)
+                var overlayColor = 0xFFD700
                 this.B1.fillColor = overlayColor
                 game.landscapeUpdate = true
             } else {
@@ -76,14 +78,10 @@ class Settings extends Phaser.Scene {
             color: '#ffffff'
         })
 
-        this.stateLabel = this.add.text(500, 405, `Current: ${game.sceneState}`, {
-            fontSize: '16px',
-            color: '#ffffff'
-        })
-
+        this.sceneButtons = []
         this.createSceneButton(600, 450, 'Calm', 'calm')
         this.createSceneButton(750, 450, 'Festival', 'festival')
-        this.createSceneButton(900, 450, 'Sparse', 'sparse')
+        this.createSceneButton(900, 450, 'Easter', 'easter')
     }
 
     createSceneButton(x, y, text, stateValue) {
@@ -95,11 +93,17 @@ class Settings extends Phaser.Scene {
             color: '#000000'
         }).setOrigin(0.5)
 
+        this.sceneButtons.push({ rect, stateValue })
+
         rect.on('pointerdown', () => {
             game.sceneState = stateValue
             game.lanternUpdate = true
 
-            this.stateLabel.setText(`Current: ${game.sceneState}`)
+            this.sceneButtons.forEach(btn => {
+                btn.rect.fillColor = 0xFFFFFF
+            })
+
+            rect.fillColor = 0xFFD700
         })
     }
 

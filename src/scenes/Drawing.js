@@ -10,17 +10,33 @@ class Drawing extends Phaser.Scene {
         const canvasH = 42 * 12.5
         const canvasX = config.width / 2 - canvasW / 2
         const canvasY = config.height / 2 - canvasH / 2
-
+        
+        this.add.rectangle(250, canvasY - 75, config.width - 500, canvasH + 150, 0xF5F5DC).setOrigin(0)
         this.add.rectangle(canvasX, canvasY, canvasW, canvasH, 0xBDB76B).setOrigin(0)
+
+        
+        this.add.text(260, canvasY - 50, "Customize a lantern!", { fontSize: '32px', fill: '#000' })
+        this.add.text(260, canvasY + canvasH + 25, "Press D to save your drawing", { fontSize: '32px', fill: '#000' })
+
+        var B1color = Phaser.Display.Color.GetColor(0, 0, 0)
+        this.B1 = this.add.rectangle(canvasX + canvasW + 70, 290, 150, 40, B1color).setOrigin(0).setInteractive()
+        this.B1.on('pointerdown', () => {
+            this.rt.clear()
+        })
+
+        this.add.text(canvasX + canvasW + 80, 300, `clear canvas`, {
+            fontSize: '18px',
+            color: '#FFFFFF'
+        })
 
         this.rt = this.add.renderTexture(canvasX, canvasY, canvasW, canvasH).setOrigin(0)
         this.rt.clear()
 
-        const g = this.add.graphics()
-        g.fillStyle(0xffffff, 0.8)
-        g.fillCircle(8, 8, 8)
-        g.generateTexture('brush', 16, 16)
-        g.destroy()
+        const pen = this.add.graphics()
+        pen.fillStyle(0xffffff, 0.8)
+        pen.fillCircle(8, 8, 8)
+        pen.generateTexture('brush', 16, 16)
+        pen.destroy()
 
         this.isDrawing = false
         this.drawingPresent = false

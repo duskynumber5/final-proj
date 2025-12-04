@@ -30,7 +30,7 @@ class Home extends Phaser.Scene {
         this.lanterns = []
         this.genLanterns()
 
-        this.label = this.add.text(0, 0, '(x, y)')
+        this.sceneText = this.add.text(10, 10, '()')
 
         this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
         this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)
@@ -38,11 +38,9 @@ class Home extends Phaser.Scene {
     }
 
     update() {
-
-
         const pointer = this.input.activePointer
 
-        this.label.setText('(' + pointer.x + ', ' + pointer.y + ')')
+        this.sceneText.setText('( mood: ' + game.sceneState + ' )').setDepth(11)
 
         for (var i = 0; i < this.lanterns.length; i++ ) {
             const lantern = this.lanterns[i]
@@ -95,47 +93,52 @@ class Home extends Phaser.Scene {
             
             this.lanterns.push(lantern)
             game.currentLanterns += 1
+            lantern.setDepth(10)
 
             game.playerDrawingReady = false
         }
     }
 
     genWater() {
+        const topY = 650
+        const bottomY = 825
+        const HEIGHT = bottomY - topY
         const tiles = []
 
-        for (let x = -25; x < 1525; x += 10) {
-            for (let y = 655; y < 825; y += 10) {
+        this.waterGraphics = this.add.graphics()
 
-                const scale = 0.02 
-                let v = Math.sin(x * scale) + Math.sin(y * scale * 1.3)
-                v = (v + 2) / 4;
+        for (let y = 0; y < HEIGHT; y++) {
 
-                let r, g, b
+            const worldY = topY + y
+            const t = y / HEIGHT
 
-                if (game.sceneState === 'calm') {
-                    r = 40 + 40 * v
-                    g = 90 + 80 * v
-                    b = 160 + 80 * v
-                } else if (game.sceneState === 'festival') {
-                    r = 180 + 70 * v
-                    g = 100 + 60 * v
-                    b = 80 + 40 * v
-                } else {
-                    r = 80 + 80 * v
-                    g = 110 + 80 * v
-                    b = 150 + 80 * v
-                }
+            let rTop, gTop, bTop
+            let rBot, gBot, bBot
 
-                r = Phaser.Math.Clamp(r, 0, 255)
-                g = Phaser.Math.Clamp(g, 0, 255)
-                b = Phaser.Math.Clamp(b, 0, 255)
-
-                const color = Phaser.Display.Color.GetColor(r, g, b)
-                const sq = this.add.rectangle(x, y, 10, 10, color).setAlpha(0.7)
-
-                tiles.push(sq)
+            if (game.sceneState === 'calm') {
+                rTop = 40;  gTop = 90;  bTop = 160
+                rBot = 20;  gBot = 60;  bBot = 120
+            } else if (game.sceneState === 'festival') {
+                rTop = 180; gTop = 100; bTop = 80
+                rBot = 100; gBot = 60;  bBot = 50
+            } else {
+                rTop = 80;  gTop = 110; bTop = 150
+                rBot = 40;  gBot = 70;  bBot = 110
             }
-        }
+
+            let r = Phaser.Math.Linear(rTop, rBot, t)
+            let g = Phaser.Math.Linear(gTop, gBot, t)
+            let b = Phaser.Math.Linear(bTop, bBot, t)
+
+            const wave = Math.sin((worldY * 0.12)) * 8
+            r = Phaser.Math.Clamp(r + wave, 0, 255)
+            g = Phaser.Math.Clamp(g + wave, 0, 255)
+            b = Phaser.Math.Clamp(b + wave, 0, 255)
+
+            const color = Phaser.Display.Color.GetColor(r, g, b)
+            this.waterGraphics.fillStyle(color, 0.95)
+            this.waterGraphics.fillRect(-25, worldY, 1525, 1)
+        }   
         const blue = Phaser.Display.Color.GetColor(51, 153, 255)
         this.add.rectangle(-25, 650, 1525, 170, blue).setAlpha(0.2).setOrigin(0,0)
     }
@@ -318,7 +321,7 @@ class Home extends Phaser.Scene {
                 },
                 palette: 'warm'
             },
-            sparse: {
+            easter: {
                 typeWeights: {
                     small: 0.8,
                     medium: 0.15,
