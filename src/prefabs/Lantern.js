@@ -2,8 +2,8 @@ class Lantern extends Phaser.GameObjects.Container {
     constructor(scene, x, y) {
         super(scene, x, y)
 
-        scene.add.existing(this)    // add object to scene
-        scene.physics.add.existing(this)    // enable object physics
+        scene.add.existing(this)
+        scene.physics.add.existing(this)
 
         const baseColor = Phaser.Display.Color.GetColor(
             246,
@@ -23,20 +23,15 @@ class Lantern extends Phaser.GameObjects.Container {
         this.body.setSize(32, 42)
         this.body.setOffset(-16, -21)
 
-        // random movement
         this.randomX = Phaser.Math.Between(-1, 1)
         this.randomY = Phaser.Math.Between(-1, 1)
         this.body.setVelocity(10 * this.randomX, 10 * this.randomY)  
 
-        // gravity
         this.body.setDrag(200, 200)
         this.body.setDamping(true)
         this.body.setCollideWorldBounds(true)
         this.body.setBounce(0.5)
         this.body.setMaxVelocity(16, 16)
-
-        // pattern
-        
     }
 
     applySizeType(type) {
@@ -71,14 +66,14 @@ class Lantern extends Phaser.GameObjects.Container {
             g = Phaser.Math.Between(160, 210)
             b = Phaser.Math.Between(110, 160)
         } else {
-            // mixed
+            // easter
             r = Phaser.Math.Between(180, 255)
             g = Phaser.Math.Between(140, 220)
             b = Phaser.Math.Between(160, 255)
         }
 
         const color = Phaser.Display.Color.GetColor(r, g, b)
-        this.bodyRect.setFillStyle(color, 1)   // change rect color
+        this.bodyRect.setFillStyle(color, 1)
     }
 
     addDrawing(drawing) {
@@ -104,7 +99,6 @@ class Lantern extends Phaser.GameObjects.Container {
     }
 
     update(pointer) {
-        // update movement w/ player mouse
         this.Xdistance = (this.body.x - pointer.x)
         this.Ydistance = (this.body.y - pointer.y)
         
