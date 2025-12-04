@@ -19,6 +19,7 @@ class Home extends Phaser.Scene {
         }
         this.scenes()
 
+        this.drawSky()
         this.drawLandscape1()
         this.drawLandscape2()
         this.genWater()
@@ -37,6 +38,8 @@ class Home extends Phaser.Scene {
     }
 
     update() {
+
+
         const pointer = this.input.activePointer
 
         this.label.setText('(' + pointer.x + ', ' + pointer.y + ')')
@@ -65,8 +68,16 @@ class Home extends Phaser.Scene {
         }
 
         if (game.lanternUpdate == true) {
+            this.redrawSky()
             this.regenWater()
             this.genLanterns()
+
+            this.skyGraphics.setDepth(0)
+            this.landscapeGraphics1.setDepth(1)
+            this.landscapeGraphics2.setDepth(2)
+            this.lanterns.forEach(lantern => {
+                lantern.setDepth(10)
+            })
         }
 
         if (game.playerDrawingReady && this.textures.exists(game.lastDrawingKey)) {
@@ -241,6 +252,52 @@ class Home extends Phaser.Scene {
             this.landscapeGraphics2.lineTo(x, height)
             this.landscapeGraphics2.strokePath()
         }
+    }
+
+    drawSky() {
+        game.skyUpdate = false
+        
+        this.skyGraphics = this.add.graphics()
+        var topColor = 0
+        var bottomColor = 0
+        
+        if (game.sceneState == 'calm') {
+            topColor = { r: 25,  g: 25,  b: 112 }
+            bottomColor = { r: 135, g: 206, b: 250 }  
+        } else if (game.sceneState == 'festival') {
+            topColor = { r: 119,  g: 136,  b: 153 }
+            bottomColor = { r: 105, g: 105, b: 105 }  
+        } else {
+            topColor = { r: 70,  g: 130,  b: 180 }
+            bottomColor = { r: 0, g: 191, b: 255 }  
+        }
+        
+        const HEIGHT_MAX = 650
+        
+        for (let y = 0; y < HEIGHT_MAX; y++) {
+            
+            const t = y / HEIGHT_MAX
+            
+            const r = Phaser.Math.Linear(topColor.r, bottomColor.r, t)
+            const g = Phaser.Math.Linear(topColor.g, bottomColor.g, t)
+            const b = Phaser.Math.Linear(topColor.b, bottomColor.b, t)
+            
+            const color = Phaser.Display.Color.GetColor(r, g, b)
+            this.skyGraphics.fillStyle(color, 1)
+            
+            this.skyGraphics.fillRect(0, y, config.width, 1)
+        }
+
+        var color = Phaser.Display.Color.GetColor(0, 0, 128)
+        this.add.rectangle(0, 0, config.width, config.height, color).setAlpha(0.3).setOrigin(0,0)
+    }
+
+    redrawSky() {
+        if (this.skyGraphics) {
+            this.skyGraphics.destroy()
+        }
+        this.drawSky()
+        game.skyUpdate = false
     }
 
     scenes() {

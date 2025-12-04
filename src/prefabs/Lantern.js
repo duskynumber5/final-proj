@@ -41,14 +41,14 @@ class Lantern extends Phaser.GameObjects.Container {
 
     applySizeType(type) {
         if (type === 'small') {
-            this.width = 20
-            this.height = 26
-        } else if (type === 'medium') {
             this.width = 32
             this.height = 42
-        } else if (type === 'large') {
+        } else if (type === 'medium') {
             this.width = 46
             this.height = 60
+        } else if (type === 'large') {
+            this.width = 64
+            this.height = 80
         }
 
         if (this.body) {

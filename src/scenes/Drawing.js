@@ -17,9 +17,9 @@ class Drawing extends Phaser.Scene {
         this.rt.clear()
 
         const g = this.add.graphics()
-        g.fillStyle(0xffffff, 1)
-        g.fillCircle(4, 4, 4)
-        g.generateTexture('brush', 8, 8)
+        g.fillStyle(0xffffff, 0.8)
+        g.fillCircle(8, 8, 8)
+        g.generateTexture('brush', 16, 16)
         g.destroy()
 
         this.isDrawing = false
